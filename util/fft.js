@@ -1,5 +1,6 @@
 const BitOperation = require('./bit_operations.js');
 const Complex = require('./complex.js');
+const ComplexCalc = require('./complex_calc.js');
 class FFTContext {
       constructor(fft_length) {
             this.fft_length = fft_length;
@@ -17,7 +18,6 @@ class FFTContext {
                   let angle = (2 * Math.PI * i) / this.fft_length;
                   roots_of_unity[i] = new Complex(Math.cos(angle), Math.sin(angle));
                   roots_of_unity_inv[i] = new Complex(Math.cos(-angle), Math.sin(-angle));
-                  console.log("Type: ", (roots_of_unity[i] instanceof Complex));
             }
 
             let num_slots = Math.floor(this.fft_length / 4);
@@ -35,18 +35,12 @@ class FFTContext {
             return [roots_of_unity, roots_of_unity_inv, reversed_bits, rot_group];
       }
 
-      fft(coeffs, rou, msg) {
+      fft(coeffs, rou) {
             let num_coeffs = coeffs.length;
-            let result = BitOperation.bit_reverse_vec(coeffs);  
-            // if(msg == "fwd") {
-            //       console.log("Result: ", result);
-            // }
+            let result = BitOperation.bit_reverse_vec(coeffs);
             let log_num_coeffs = parseInt(Math.log2(num_coeffs));
 
-            // if(msg == "fwd") {
-            //       console.log("ROU: ", rou);
-            //       console.log("Result: ", result);
-            // }
+            let butterfly_plus, butterfly_minus;
 
             for(let logm=1; logm<= log_num_coeffs; logm++){
                   for(let j=0; j<num_coeffs; j = j + (1 << logm)) {
@@ -55,43 +49,30 @@ class FFTContext {
                               let index_odd = j + i + (1 << (logm - 1));
 
                               let rou_index = (i * this.fft_length) >> logm;
-                              let omega_factor = rou[rou_index] * result[index_odd];
-                              // if(msg == "fwd") {
-                              //       console.log("ROU: ", rou);
-                              //       console.log("ROU index: ", rou[rou_index]);
-                              //       console.log("Result index: ", result[index_odd]);
-                              // }
+                              let omega_factor = ComplexCalc.complex_mul(rou[rou_index], result[index_odd]);
 
-                              let butterfly_plus = result[index_even] + omega_factor;
-                              let butterfly_minus = result[index_even] - omega_factor;
+
+                              butterfly_plus = ComplexCalc.complex_add(result[index_even], omega_factor);
+                              butterfly_minus = ComplexCalc.complex_sub(result[index_even], omega_factor);
 
                               result[index_even] = butterfly_plus;
                               result[index_odd] = butterfly_minus;
-                              // if(msg == "fwd") {
-                              //       // console.log("Result: ", result);
-                              //       // console.log("index odd: ", index_odd);
-                              //       // console.log("result odd: ", result[index_odd]);
-                              //       console.log("Butterfly plus: ", butterfly_plus);
-                              //       console.log("Butterfly minus: ", butterfly_minus);
-                              // }
                         }
                   }
             }
-
             return result;
       }
 
       fft_fwd(coeffs) {
-            let fwd = this.fft(coeffs, this.roots_of_unity, "fwd");
+            let fwd = this.fft(coeffs, this.roots_of_unity);
             return fwd;
       }
 
       fft_inv(coeffs) {
             let num_coeffs = coeffs.length;
             let result = this.fft(coeffs, this.roots_of_unity_inv);
-
             for(let i=0; i<num_coeffs; i++) {
-                  result[i] = result[i] / num_coeffs;
+                  result[i] = ComplexCalc.complex_div(result[i], num_coeffs);
             }
 
             return result;

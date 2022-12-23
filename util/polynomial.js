@@ -1,4 +1,6 @@
 const FFTContext = require('./fft.js');
+const ComplexCalc = require('./complex_calc.js');
+const Complex = require('./complex.js');
 class Polynomial {
       constructor(poly_degree, coeffs) {
             this.poly_degree = poly_degree;
@@ -62,7 +64,10 @@ class Polynomial {
       round() {
             let new_coeffs = new Array(this.poly_degree).fill(0);
             for(let i=0;i<this.poly_degree;i++){
-                  new_coeffs[i] = Math.round(this.coeffs[i]);
+                  if (this.coeffs[i] instanceof Complex)
+                        new_coeffs[i] = Math.round(this.coeffs[i].real);
+                  else
+                        new_coeffs[i] = Math.round(this.coeffs[i]);
             }
             return new Polynomial(this.poly_degree, new_coeffs)
       }
@@ -73,7 +78,7 @@ class Polynomial {
             let b = fft.fft_fwd(poly.coeffs.concat(new Array(this.poly_degree).fill(0)));
             let ab = new Array(this.poly_degree * 2).fill(0);
             for(let i=0; i< this.poly_degree * 2; i++) {
-                  ab[i] = a[i] * b[i];
+                  ab[i] = ComplexCalc.complex_mul(a[i], b[i]);
             }
 
             let prod = fft.fft_inv(ab);
@@ -87,7 +92,7 @@ class Polynomial {
                   else
                         sign = -1;
                   
-                  poly_prod[index] = poly_prod[index] + (sign * prod[d]);
+                  poly_prod[index] = ComplexCalc.complex_add(poly_prod[index], ComplexCalc.complex_mul(sign, prod[d]));
             }
 
             if (round == true)
