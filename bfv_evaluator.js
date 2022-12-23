@@ -15,7 +15,6 @@ class BFVEvaluator {
       }
 
       multiply(cipher1, cipher2, relin_key) {
-            // console.log("C0: ", cipher2.c0)
             let c0 = cipher1.c0.multiply_fft(cipher2.c0);
             c0 = c0.scalar_multiply(1 / this.scaling_factor)
             c0 = c0.round().mod(this.coeff_modulus)
@@ -28,9 +27,6 @@ class BFVEvaluator {
             c2 = c2.scalar_multiply(1 / this.scaling_factor);
             c2 = c2.round().mod(this.coeff_modulus);
 
-            // console.log("In mul c0: ", c0);
-            // console.log("In mul c1: ", c1);
-            // console.log("In mul c2: ", c2);
             return this.relinearize(relin_key, c0, c1, c2);
       }
 
@@ -61,8 +57,6 @@ class BFVEvaluator {
                   new_c0 = new_c0.add(keys[i][0].multiply(c2_decomposed[i], this.coeff_modulus), this.coeff_modulus);
                   new_c1 = new_c1.add(keys[i][1].multiply(c2_decomposed[i], this.coeff_modulus), this.coeff_modulus);
             }
-            // console.log("In Relin c0: ", new_c0);
-            // console.log("In Relin c1: ", new_c1);
             return new Ciphertext(new_c0, new_c1);
       }
 }
