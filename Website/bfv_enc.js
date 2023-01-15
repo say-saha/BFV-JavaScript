@@ -624,7 +624,7 @@ function enc(){
       var working = "No"
       var test_case = "x*y";
       var startTime = performance.now();
-      let degree = 2048;
+      let degree = 512;
       let plain_modulus = 7;
       let cipher_modulus = 8000000000000;
       const params = new BFVParameters(degree, plain_modulus, cipher_modulus);
@@ -670,9 +670,9 @@ function enc(){
       document.getElementById("plain_modulus").innerHTML = plain_modulus;
       document.getElementById("cipher_modulus").innerHTML = cipher_modulus;
       document.getElementById("test_case").innerHTML = test_case;
-      document.getElementById("number_1 (x)").innerHTML = message1;
-      document.getElementById("number_2 (y)").innerHTML = message2;
-      document.getElementById("number_3 (z)").innerHTML = message3;
+      document.getElementById("number_1").innerHTML = message1;
+      document.getElementById("number_2").innerHTML = message2;
+      document.getElementById("number_3").innerHTML = message3;
       document.getElementById("key_gen_time").innerHTML = (key_gen_time.toFixed(3)).toString() + " ms";
       document.getElementById("encryption_time").innerHTML = (encryption_time.toFixed(3)).toString() + " ms";
       document.getElementById("operation_time").innerHTML = (operation_time.toFixed(3)).toString() + " ms";
