@@ -37,28 +37,37 @@ var sample_uniform = (min_val, max_val, sample_count) => {
 
       // Returns:
       //       A list of randomly sampled values.
-    
+      let max = 100;
       if (sample_count == 1)
-            return Math.floor(Math.random() * ((max_val-1) - min_val + 1) + min_val);
+            if (typeof(max_val) == 'bigint')
+                  return BigInt(Math.floor(Math.random() * ((max-1) - min_val + 1) + min_val)) * (max_val / BigInt(max));
+            else
+                  return (Math.floor(Math.random() * ((max-1) - min_val + 1) + min_val)) * (max_val / max);
       
       let uniform_sample = new Array(sample_count).fill(0);
-      for(let i=0; i<sample_count; i++)
-            uniform_sample[i] =  Math.floor(Math.random() * ((max_val-1) - min_val + 1) + min_val);
+      if (typeof(max_val) == 'bigint') {
+            for(let i=0; i<sample_count; i++)
+                  uniform_sample[i] =  BigInt(Math.floor(Math.random() * ((max-1) - min_val + 1) + min_val)) * (max_val / BigInt(max));
+      }
+      else {
+            for(let i=0; i<sample_count; i++)
+                  uniform_sample[i] =  (Math.floor(Math.random() * ((max-1) - min_val + 1) + min_val)) * (max_val / max);
+      }
       
       return uniform_sample;
 }
 var complex_add = (num1, num2) => {
       let real, imaginary;
       if (num1 instanceof Complex && num2 instanceof Complex){
-            real = num1.real + num2.real;
-            imaginary = num1.imaginary + num2.imaginary;
+            real = BigInt(num1.real) + BigInt(num2.real);
+            imaginary = BigInt(num1.imaginary) + BigInt(num2.imaginary);
       }
       else if (num1 instanceof Complex && !(num2 instanceof Complex)) {
             real = num1.real + num2;
             imaginary = num1.imaginary;
       }
       else {
-            real = num1 + num2.real;
+            real = BigInt(num1) + BigInt(num2.real);
             imaginary = num2.imaginary;
       }
       return new Complex(real, imaginary);
@@ -67,15 +76,15 @@ var complex_add = (num1, num2) => {
 var complex_sub = (num1, num2) => {
       let real, imaginary;
       if (num1 instanceof Complex && num2 instanceof Complex){
-            real = num1.real - num2.real;
-            imaginary = num1.imaginary - num2.imaginary;
+            real = BigInt(num1.real) - BigInt(num2.real);
+            imaginary = BigInt(num1.imaginary) - BigInt(num2.imaginary);
       }
       else if (num1 instanceof Complex && !(num2 instanceof Complex)) {
             real = num1.real - num2;
             imaginary = num1.imaginary;
       }
       else {
-            real = num1 - num2.real;
+            real = BigInt(num1) - BigInt(num2.real);
             imaginary = num2.imaginary;
       }
       return new Complex(real, imaginary);
@@ -84,8 +93,8 @@ var complex_sub = (num1, num2) => {
 var complex_mul = (num1, num2) => {
       let real, imaginary;
       if (num1 instanceof Complex && num2 instanceof Complex){
-            real = (num1.real * num2.real) - (num1.imaginary * num2.imaginary);
-            imaginary = (num1.real * num2.imaginary) + (num1.imaginary * num2.real);
+            real = (BigInt(num1.real) * BigInt(num2.real)) - (BigInt(num1.imaginary) * BigInt(num2.imaginary));
+            imaginary = (BigInt(num1.real) * BigInt(num2.imaginary)) + (BigInt(num1.imaginary) * BigInt(num2.real));
       }
       else if (num1 instanceof Complex && !(num2 instanceof Complex)) {
             real = num1.real * num2;
@@ -133,7 +142,98 @@ var bit_reverse_vec = (values) => {
 
       return result;
 }
-class Ciphertext {
+
+//Source: https://golb.hplar.ch/2018/09/javascript-bigint.html
+class BigIntMath {
+
+      static max(...values) {
+          if (values.length === 0) {
+              return null;
+          }
+  
+          if (values.length === 1) {
+              return values[0];
+          }
+  
+          let max = values[0];
+          for (let i = 1; i < values.length; i++) {
+              if (values[i] > max) {
+                  max = values[i];
+              }
+          }
+          return max;
+      }
+  
+      static min(...values) {
+          if (values.length === 0) {
+              return null;
+          }
+  
+          if (values.length === 1) {
+              return values[0];
+          }
+  
+          let min = values[0];
+          for (let i = 1; i < values.length; i++) {
+              if (values[i] < min) {
+                  min = values[i];
+              }
+          }
+          return min;
+      }
+  
+      static sign(value) {
+          if (value > 0n) {
+              return 1n;
+          }
+          if (value < 0n) {
+              return -1n;
+          }
+          return 0n;
+      }
+  
+      static abs(value) {
+          if (this.sign(value) === -1n) {
+              return -value;
+          }
+          return value;
+      }
+  
+      // https://stackoverflow.com/questions/53683995/javascript-big-integer-square-root/58863398#58863398
+      static rootNth(value, k = 2n) {
+          if (value < 0n) {
+              throw 'negative number is not supported'
+          }
+  
+          let o = 0;
+          let x = value;
+          let limit = 100;
+  
+          while (x ** k !== k && x !== o && --limit) {
+              o = x;
+              x = ((k - 1n) * x + value / x ** (k - 1n)) / k;
+          }
+  
+          return x;
+      }
+  
+      static sqrt(value) {
+          return BigIntMath.rootNth(value);
+      }
+
+      //Source: https://github.com/peterolson/BigInteger.js/pull/224/files
+      static log10(value) {
+            if (value<0) return NaN;
+            var s = value.toString(10);
+            return s.length + Math.log10("0."+s.substring(0,15));
+      }
+
+      static log(value) {
+            return this.log10(value)*Math.log(10);
+      }
+  
+  }
+  class Ciphertext {
       constructor(c0, c1, scaling_factor, modulus) {
             this.c0 = c0;
             this.c1 = c1;
@@ -241,14 +341,9 @@ class Polynomial {
       }   
       
       add(poly, coeff_modulus) {
-            let sum = new Polynomial(this.poly_degree, new Array(this.poly_degree).fill(0));
+            let sum = new Polynomial(this.poly_degree, new Array(this.poly_degree).fill(BigInt(0)));
             for(let i=0; i<this.poly_degree; i++){
-                  if(BigNumber.isBigNumber(this.coeffs[i]))
-                        sum.coeffs[i] = this.coeffs[i].plus(poly.coeffs[i]);
-                  else if (BigNumber.isBigNumber(poly.coeffs[i]))
-                        sum.coeffs[i] = poly.coeffs[i].plus(this.coeffs[i]);      
-                  else
-                        sum.coeffs[i] = this.coeffs[i] + poly.coeffs[i];
+                  sum.coeffs[i] = BigInt(this.coeffs[i]) + BigInt(poly.coeffs[i]);
             }
             if(arguments.length > 1){
                   sum = sum.mod(coeff_modulus)
@@ -257,7 +352,7 @@ class Polynomial {
       }
 
       multiply(poly, coeff_modulus) {
-            let mul = new Polynomial(this.poly_degree, new Array(this.poly_degree).fill(0));
+            let mul = new Polynomial(this.poly_degree, new Array(this.poly_degree).fill(BigInt(0)));
             for(let d=0; d<(2*this.poly_degree)-1; d++){
                   let index = ((d % this.poly_degree) + this.poly_degree) % this.poly_degree;
                   let sign = 0;
@@ -266,46 +361,28 @@ class Polynomial {
                   else
                         sign = -1;
                   
-                  let coeff = 0;
+                  let coeff = BigInt(0);
                   for(let i=0; i<this.poly_degree; i++){
                         if((d-i)>=0 && (d-i)<this.poly_degree)
-                              if (((new BigNumber(coeff)).plus((new BigNumber(this.coeffs[i])).multipliedBy(poly.coeffs[d-i]))).isGreaterThanOrEqualTo(Number.MAX_SAFE_INTEGER))
-                                    coeff = (new BigNumber(coeff)).plus((new BigNumber(this.coeffs[i])).multipliedBy(poly.coeffs[d-i]));
-                              else
-                                    coeff = coeff + this.coeffs[i] * poly.coeffs[d-i];
+                              coeff = BigInt(coeff) + BigInt(this.coeffs[i]) * BigInt(poly.coeffs[d-i]);
                   }
-                  if (BigNumber.isBigNumber(coeff))
-                        mul.coeffs[index] = (new BigNumber(mul.coeffs[index])).plus(coeff.multipliedBy(sign));
-                  else
-                        mul.coeffs[index] = mul.coeffs[index] + (sign * coeff);
-                  // console.log("Mul coeffs: ", mul.coeffs[index])
+                  mul.coeffs[index] = mul.coeffs[index] + (BigInt(sign) * coeff);
                   if(arguments.length > 1) {
-                        if (BigNumber.isBigNumber(mul.coeffs[index]))
-                              mul.coeffs[index] = ((mul.coeffs[index]).mod(coeff_modulus)).toNumber();
-                        else
-                              mul.coeffs[index] = ((mul.coeffs[index] % coeff_modulus) + coeff_modulus) % coeff_modulus;
+                        mul.coeffs[index] = ((BigInt(mul.coeffs[index]) % coeff_modulus) + coeff_modulus) % coeff_modulus;
                   }
-                  // console.log("After Mul coeffs: ", mul.coeffs[index])
             }
             return mul;                  
       }
 
       scalar_multiply(scalar, coeff_modulus) {
-            let new_coeffs = new Array(this.poly_degree).fill(0);
+            let new_coeffs = new Array(this.poly_degree).fill(BigInt(0));
             if(arguments.length == 1)
                   for(let i=0; i<this.poly_degree; i++){
-                        if (BigNumber.isBigNumber(this.coeffs[i])){
-                              new_coeffs[i] = (this.coeffs[i]).multipliedBy(scalar);                        
-                        }
-                        else
-                              new_coeffs[i] = this.coeffs[i] * scalar;
+                        new_coeffs[i] = BigInt(this.coeffs[i]) * BigInt(scalar);
                   }
             else
                   for(let i=0; i<this.poly_degree; i++){
-                        if (((new BigNumber(this.coeffs[i])).multipliedBy(scalar)).isGreaterThanOrEqualTo(Number.MAX_SAFE_INTEGER))
-                              new_coeffs[i] = (((new BigNumber(this.coeffs[i])).multipliedBy(scalar))).mod(coeff_modulus);
-                        else
-                              new_coeffs[i] = (((this.coeffs[i] * scalar) % coeff_modulus) + coeff_modulus) % coeff_modulus;
+                        new_coeffs[i] = (((BigInt(this.coeffs[i]) * BigInt(scalar)) % coeff_modulus) + coeff_modulus) % coeff_modulus;
                   }
             return new Polynomial(this.poly_degree, new_coeffs);
       }
@@ -321,15 +398,9 @@ class Polynomial {
             let new_coeffs = new Array(this.poly_degree).fill(0);
             for(let i=0;i<this.poly_degree;i++){
                   if (this.coeffs[i] instanceof Complex)
-                        if ((new BigNumber(this.coeffs[i].real)).e > 0)
-                              new_coeffs[i] = new BigNumber(BigInt(this.coeffs[i].real));
-                        else
-                              new_coeffs[i] = Math.round(this.coeffs[i].real);
+                        new_coeffs[i] = Math.round(this.coeffs[i].real);
                   else
-                        if (BigNumber.isBigNumber(this.coeffs[i]))
-                              new_coeffs[i] = this.coeffs[i].integerValue();
-                        else
-                              new_coeffs[i] = Math.round(this.coeffs[i]);
+                        new_coeffs[i] = Math.round(this.coeffs[i]);
             }
             return new Polynomial(this.poly_degree, new_coeffs)
       }
@@ -337,9 +408,7 @@ class Polynomial {
       multiply_fft(poly, round=true) {
             let fft = new FFTContext(this.poly_degree * 8);
             let a = fft.fft_fwd(this.coeffs.concat(new Array(this.poly_degree).fill(0)));
-            // console.log("A: ", a);
             let b = fft.fft_fwd(poly.coeffs.concat(new Array(this.poly_degree).fill(0)));
-            // console.log("B: ", b);
             let ab = new Array(this.poly_degree * 2).fill(0);
             for(let i=0; i< this.poly_degree * 2; i++) {
                   ab[i] = complex_mul(a[i], b[i]);
@@ -573,11 +642,11 @@ class BFVKeyGenerator {
       }
 
       generate_relin_key(params) {
-            let base = Math.ceil(Math.sqrt(params.cipher_modulus));
-            let num_levels = Math.floor(Math.log(params.cipher_modulus)/Math.log(base)) + 1;
+            let base = BigInt(Math.ceil(Number(BigIntMath.sqrt(params.cipher_modulus))));
+            let num_levels = Math.floor(BigIntMath.log(params.cipher_modulus) / BigIntMath.log(base)) + 1;
 
-            let keys = new Array(num_levels).fill(0);
-            let power = 1;
+            let keys = new Array(num_levels).fill(BigInt(0));
+            let power = BigInt(1);
             let sk_squared = this.secret_key.s.multiply(this.secret_key.s, params.cipher_modulus);
 
             for(let i=0; i<num_levels; i++) {
@@ -621,65 +690,56 @@ class BFVParameters {
 }
 
 function enc(){
-      var degrees = [8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096];
-      for (let i=0;i<degrees.length;i++){ 
-            var startTime = performance.now();
-            let degree = degrees[i];
-            let plain_modulus = 7;
-            let cipher_modulus = 8000000000000;
-            const params = new BFVParameters(degree, plain_modulus, cipher_modulus);
-            const key_generator = new BFVKeyGenerator(params);
-                  
-            const secret_key = key_generator.secret_key;
-            const public_key = key_generator.public_key;
-            const relin_key = key_generator.relin_key;
+      var startTime = performance.now();
+      let degree = 8;
+      let plain_modulus = BigInt(17);
+      let cipher_modulus = BigInt(65521);
+      
+      const params = new BFVParameters(degree, plain_modulus, cipher_modulus);
+      const key_generator = new BFVKeyGenerator(params);
             
-            const encoder = new IntegerEncoder(params);
-            const encryptor = new BFVEncryptor(params, public_key);
-            const decryptor = new BFVDecryptor(params, secret_key);
-            const evaluator = new BFVEvaluator(params);
-            let count = 0;
-            let time = 0;
-            let message1 = Math.floor(Math.random() * 5);
-            // let message1 = 5;
-            // console.log("Number 1: ", message1);
-            let message2 = Math.floor(Math.random() * 5);
-            // let message2 = 5;
-            // console.log("Number 2: ", message2);
-            let message3 = Math.floor(Math.random() * 5);
-            // // let message3 = 2;
+      const secret_key = key_generator.secret_key;
+      const public_key = key_generator.public_key;
+      const relin_key = key_generator.relin_key;
+      
+      const encoder = new IntegerEncoder(params);
+      const encryptor = new BFVEncryptor(params, public_key);
+      const decryptor = new BFVDecryptor(params, secret_key);
+      const evaluator = new BFVEvaluator(params);
+      // let count = 0;
+      for (let i=0;i<1;i++){      
+            // let message1 = Math.floor(Math.random() * 100);
+            let message1 = 2;
+            console.log("Number 1: ", message1);
+            // let message2 = Math.floor(Math.random() * 100);
+            let message2 = 2;
+            console.log("Number 2: ", message2);
+            // let message3 = Math.floor(Math.random() * 100);
+            // let message3 = 2;
             // console.log("Number 3: ", message3);
       
             let encoded_plain1 = encoder.encode(message1);
             let encoded_plain2 = encoder.encode(message2);
-            let encoded_plain3 = encoder.encode(message3);
-
+            // let encoded_plain3 = encoder.encode(message3);
             let cipher1 = encryptor.encrypt(encoded_plain1);
             let cipher2 = encryptor.encrypt(encoded_plain2);
-            let cipher3 = encryptor.encrypt(encoded_plain3);
+            // let cipher3 = encryptor.encrypt(encoded_plain3);
 
-            // let final = evaluator.multiply(cipher1, cipher2, relin_key);
-            // final = evaluator.multiply(final, cipher3, relin_key);
             let final = evaluator.multiply(cipher1, cipher2, relin_key);
-            final = evaluator.add(final, cipher3);
-            // let final = evaluator.add(cipher1, cipher2);
+            final = evaluator.multiply(final, cipher2, relin_key);
+            // let final = evaluator.multiply(mul, mul, relin_key);
+            // let final = evaluator.add(mul, cipher3);
             // console.log("Cipher text: ", final);
             let decrypted_encoded = decryptor.decrypt(final);
             // console.log("Decrypted encoded: ", decrypted_encoded);
             let decrypted = encoder.decode(decrypted_encoded);
-            // console.log("Decrypted: ", decrypted);
-            // if(message1 + message2 + message3 == decrypted)
+            console.log("Decrypted: ", decrypted);
+            // if(Math.pow(message1, 3) == decrypted)
             //       count ++;
-            console.log("Degree: ", degrees[i]);
-            if((message1 * message2) + message3 == decrypted)
-                  console.log("Working: YES");
-            else
-                  console.log("Working: NO");
-            var endTime = performance.now();
-            time = endTime - startTime;
-            
-            // console.log("Count: ", count);
-            console.log(`Average time taken ${time/100} milliseconds`)  
       }
+      
+      // console.log("Count: ", count);
+      var endTime = performance.now()
+      console.log(`Time taken ${endTime - startTime} milliseconds`)      
 }
 
