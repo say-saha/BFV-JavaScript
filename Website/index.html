@@ -1,4 +1,9 @@
 <html>  
+<style>
+      table, th, td {
+            border:1px solid black;
+      }
+</style>
 <head>  
 <script type = "text/javascript" src="bfv_enc.js"></script>  
 <!-- <script src="https://peterolson.github.io/BigInteger.js/BigInteger.min.js"></script> // Good library but without log -->
@@ -7,5 +12,40 @@
 <body>  
 <p>Click the following button to see the function in action</p>  
 <input type = "button" onclick = "enc()" value = "Display">  
+<h1>Report</h1>
+<table style="width:50%">
+      <col>
+        <td>Degree</td>
+        <td>Plain text modulus</td>
+        <td>Cipher text modulus</td>
+        <td>Test case</td>
+        <td>Number 1</td>
+        <td>Number 2</td>
+        <td>Number 3</td>
+        <td>Key generation time</td>
+        <td>Encryption time</td>
+        <td>Operation time</td>
+        <td>Decryption time</td>
+        <td>Output</td>
+        <td>Working</td>
+        <td>Total time</td>
+      </col>
+      <col>
+        <td id="degree"></td>
+        <td id="plain_modulus"></td>
+        <td id="cipher_modulus"></td>
+        <td id="test_case"></td>
+        <td id="number_1"></td>
+        <td id="number_2"></td>
+        <td id="number_3"></td>
+        <td id="key_gen_time"></td>
+        <td id="encryption_time"></td>
+        <td id="operation_time"></td>
+        <td id="decryption_time"></td>
+        <td id="output"></td>
+        <td id="working"></td>
+        <td id="total_time"></td>
+      </col>
+</table>    
 </body>  
 </html>  
