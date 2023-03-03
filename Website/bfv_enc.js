@@ -19,7 +19,7 @@ function enc(){
             const secret_key = key_generator.secret_key;
             const public_key = key_generator.public_key;
             const relin_key = key_generator.relin_key;
-            var key_gen_time = (performance.now() - startTime)/100;
+            var key_gen_time = (performance.now() - startTime);
             avg_key_gen_time += key_gen_time;
             
             let message1 = Math.floor(Math.random() * 10);
@@ -36,25 +36,25 @@ function enc(){
             let cipher1 = encryptor.encrypt(encoded_plain1);
             let cipher2 = encryptor.encrypt(encoded_plain2);
             let cipher3 = encryptor.encrypt(encoded_plain3);
-            var encryption_time = ((performance.now() - startTime)/100) - key_gen_time;
+            var encryption_time = ((performance.now() - startTime)) - key_gen_time;
             avg_enc_time += encryption_time;
 
             const evaluator = new BFVEvaluator(params);
             let mul1 = evaluator.multiply(cipher1, cipher2, relin_key);
             let final = evaluator.add(mul1, cipher3);
-            var operation_time = ((performance.now() - startTime)/100) - (key_gen_time + encryption_time);
+            var operation_time = ((performance.now() - startTime)) - (key_gen_time + encryption_time);
             avg_operation_time += operation_time;
 
             const decryptor = new BFVDecryptor(params, secret_key);
             let decrypted_encoded = decryptor.decrypt(final);
             let decrypted = encoder.decode(decrypted_encoded);
-            var decryption_time = ((performance.now() - startTime)/100) - (key_gen_time + encryption_time + operation_time);
+            var decryption_time = ((performance.now() - startTime)) - (key_gen_time + encryption_time + operation_time);
             avg_dec_time += decryption_time;
 
             if((message1 * message2) + message3 == decrypted)
                   working_case += 1;
 
-            var total_time = (performance.now() - startTime)/100;    
+            var total_time = (performance.now() - startTime);    
             avg_total_time += total_time;        
       }
 
