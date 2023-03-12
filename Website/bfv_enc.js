@@ -1,18 +1,17 @@
-function use_case_1(){
-      // window.location.reload(true);
-      // var degrees = [16, 32, 64, 128, 256, 512, 1024];
-      var degrees = [16, 32, 64, 128];
+var plain_modulus = 8;
+var cipher_modulus = 17592186044416;
+var degrees = [16, 32, 64, 128, 256, 512, 1024];
+// var degrees = [16, 32, 64, 128];
+var test_cases = 10;
 
+function use_case_1(){
       for (let degree=0; degree<degrees.length; degree++) {
-            var test_cases = 10;
             var avg_key_gen_time = 0;
             var avg_enc_time = 0;
             var avg_operation_time = 0;
             var avg_dec_time = 0;
             var avg_total_time = 0;
             var working_case = 0;
-            var plain_modulus = 3;
-            var cipher_modulus = 8000000000000;
 
             for(let i=0; i<test_cases; i++){
                   let test_case = "x + y";
@@ -74,20 +73,13 @@ function use_case_1(){
 }
 
 function use_case_2(){
-      // window.location.reload(true);
-      // var degrees = [16, 32, 64, 128, 256, 512, 1024];
-      var degrees = [16, 32, 64, 128];
-
       for (let degree=0; degree<degrees.length; degree++) {
-            var test_cases = 10;
             var avg_key_gen_time = 0;
             var avg_enc_time = 0;
             var avg_operation_time = 0;
             var avg_dec_time = 0;
             var avg_total_time = 0;
             var working_case = 0;
-            var plain_modulus = 3;
-            var cipher_modulus = 8000000000000;
 
             for(let i=0; i<test_cases; i++){
                   let test_case = "x * y";
@@ -149,20 +141,13 @@ function use_case_2(){
 }
 
 function use_case_3(){
-      // window.location.reload(true);
-      // var degrees = [16, 32, 64, 128, 256, 512, 1024];
-      var degrees = [16, 32, 64, 128];
-
       for (let degree=0; degree<degrees.length; degree++) {
-            var test_cases = 10;
             var avg_key_gen_time = 0;
             var avg_enc_time = 0;
             var avg_operation_time = 0;
             var avg_dec_time = 0;
             var avg_total_time = 0;
             var working_case = 0;
-            var plain_modulus = 3;
-            var cipher_modulus = 8000000000000;
 
             for(let i=0; i<test_cases; i++){
                   let test_case = "x * y * z";
@@ -228,20 +213,13 @@ function use_case_3(){
 }
 
 function use_case_4(){
-      // window.location.reload(true);
-      // var degrees = [16, 32, 64, 128, 256, 512, 1024];
-      var degrees = [16, 32, 64, 128];
-
       for (let degree=0; degree<degrees.length; degree++) {
-            var test_cases = 10;
             var avg_key_gen_time = 0;
             var avg_enc_time = 0;
             var avg_operation_time = 0;
             var avg_dec_time = 0;
             var avg_total_time = 0;
             var working_case = 0;
-            var plain_modulus = 3;
-            var cipher_modulus = 8000000000000;
 
             for(let i=0; i<test_cases; i++){
                   let test_case = "p * (1 + (r * t))";
@@ -311,20 +289,13 @@ function use_case_4(){
 }
 
 function use_case_5(){
-      // window.location.reload(true);
-      // var degrees = [16, 32, 64, 128, 256, 512, 1024];
-      var degrees = [16, 32, 64, 128];
-
       for (let degree=0; degree<degrees.length; degree++) {
-            var test_cases = 10;
             var avg_key_gen_time = 0;
             var avg_enc_time = 0;
             var avg_operation_time = 0;
             var avg_dec_time = 0;
             var avg_total_time = 0;
             var working_case = 0;
-            var plain_modulus = 3;
-            var cipher_modulus = 8000000000000;
 
             for(let i=0; i<test_cases; i++){
                   let test_case = "((a * a) + (c * b)) + a";
@@ -392,20 +363,13 @@ function use_case_5(){
 }
 
 function use_case_6(){
-      // window.location.reload(true);
-      // var degrees = [16, 32, 64, 128, 256, 512, 1024];
-      var degrees = [16, 32, 64, 128];
-
       for (let degree=0; degree<degrees.length; degree++) {
-            var test_cases = 10;
             var avg_key_gen_time = 0;
             var avg_enc_time = 0;
             var avg_operation_time = 0;
             var avg_dec_time = 0;
             var avg_total_time = 0;
             var working_case = 0;
-            var plain_modulus = 3;
-            var cipher_modulus = 8000000000000;
 
             for(let i=0; i<test_cases; i++){
                   let test_case = "a + (b * c))";
@@ -471,20 +435,13 @@ function use_case_6(){
 }
 
 function use_case_7(){
-      // window.location.reload(true);
-      // var degrees = [16, 32, 64, 128, 256, 512, 1024];
-      var degrees = [16, 32, 64, 128];
-
       for (let degree=0; degree<degrees.length; degree++) {
-            var test_cases = 10;
             var avg_key_gen_time = 0;
             var avg_enc_time = 0;
             var avg_operation_time = 0;
             var avg_dec_time = 0;
             var avg_total_time = 0;
             var working_case = 0;
-            var plain_modulus = 3;
-            var cipher_modulus = 8000000000000;
 
             for(let i=0; i<test_cases; i++){
                   let test_case = "(x * y) * (x + x)";
@@ -548,20 +505,13 @@ function use_case_7(){
 }
 
 function use_case_8(){
-      // window.location.reload(true);
-      // var degrees = [16, 32, 64, 128, 256, 512, 1024];
-      var degrees = [16, 32, 64, 128];
-
       for (let degree=0; degree<degrees.length; degree++) {
-            var test_cases = 10;
             var avg_key_gen_time = 0;
             var avg_enc_time = 0;
             var avg_operation_time = 0;
             var avg_dec_time = 0;
             var avg_total_time = 0;
             var working_case = 0;
-            var plain_modulus = 3;
-            var cipher_modulus = 8000000000000;
 
             for(let i=0; i<test_cases; i++){
                   let test_case = "x + y + z + a";
@@ -631,20 +581,13 @@ function use_case_8(){
 }
 
 function use_case_9(){
-      // window.location.reload(true);
-      // var degrees = [16, 32, 64, 128, 256, 512, 1024];
-      var degrees = [16, 32, 64, 128];
-
       for (let degree=0; degree<degrees.length; degree++) {
-            var test_cases = 10;
             var avg_key_gen_time = 0;
             var avg_enc_time = 0;
             var avg_operation_time = 0;
             var avg_dec_time = 0;
             var avg_total_time = 0;
             var working_case = 0;
-            var plain_modulus = 3;
-            var cipher_modulus = 8000000000000;
 
             for(let i=0; i<test_cases; i++){
                   let test_case = "x + y + z";
@@ -710,20 +653,13 @@ function use_case_9(){
 }
 
 function use_case_10(){
-      // window.location.reload(true);
-      // var degrees = [16, 32, 64, 128, 256, 512, 1024];
-      var degrees = [16, 32, 64, 128];
-
       for (let degree=0; degree<degrees.length; degree++) {
-            var test_cases = 10;
             var avg_key_gen_time = 0;
             var avg_enc_time = 0;
             var avg_operation_time = 0;
             var avg_dec_time = 0;
             var avg_total_time = 0;
             var working_case = 0;
-            var plain_modulus = 3;
-            var cipher_modulus = 8000000000000;
 
             for(let i=0; i<test_cases; i++){
                   let test_case = "(x * y) + (x * y)";

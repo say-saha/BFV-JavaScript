@@ -1,3 +1,14 @@
+var sample_gauss = (sample_count, std_dev) => {
+      // Samples from a gaussian or normal distribution.
+      // Using Box-Muller transform
+      let gauss_sample = new Array(sample_count).fill(0);
+      for(let i=0; i<sample_count; i++){
+            let box_muller = Math.sqrt(-2.0 * Math.log(Math.random())) * Math.cos(2.0 * Math.PI * Math.random());
+            gauss_sample[i] =  Math.round(box_muller * std_dev);
+      }
+      return gauss_sample;
+}
+
 var sample_triangle = (sample_count) => {
       // Samples from a discrete triangle distribution.
 
@@ -446,9 +457,9 @@ class BFVEncryptor {
             
             let random_vec = new Polynomial(this.poly_degree, sample_triangle(this.poly_degree));
 
-            let error1 = new Polynomial(this.poly_degree, sample_triangle(this.poly_degree));
+            let error1 = new Polynomial(this.poly_degree, sample_gauss(this.poly_degree, 3.2));
             // error1 = new Polynomial(this.poly_degree, new Array(this.poly_degree).fill(0)); //TODO: Not sure why error1 is re-declared with empty array
-            let error2 = new Polynomial(this.poly_degree, sample_triangle(this.poly_degree));
+            let error2 = new Polynomial(this.poly_degree, sample_gauss(this.poly_degree, 3.2));
             // error2 = new Polynomial(this.poly_degree, new Array(this.poly_degree).fill(0)); //TODO: Not sure why error2 is re-declared with empty array
 
             let c0 = error1.add(p0.multiply(random_vec, this.coeff_modulus), this.coeff_modulus).add(scaled_message, this.coeff_modulus);
@@ -561,7 +572,7 @@ class BFVKeyGenerator {
       generate_public_key(params) {
             let uniform_sample = sample_uniform(0, params.cipher_modulus, params.poly_degree);
             let pk_coeff = new Polynomial(params.poly_degree, uniform_sample);
-            let triangle_sample = sample_triangle(params.poly_degree);
+            let triangle_sample = sample_gauss(params.poly_degree, 3.2);
             let pk_error = new Polynomial(params.poly_degree, triangle_sample);
 
             let p0 = pk_coeff.multiply(this.secret_key.s, params.cipher_modulus);
@@ -582,7 +593,7 @@ class BFVKeyGenerator {
 
             for(let i=0; i<num_levels; i++) {
                   let k1 = new Polynomial(params.poly_degree, sample_uniform(0, params.cipher_modulus, params.poly_degree));
-                  let error = new Polynomial(params.poly_degree, sample_triangle(params.poly_degree))
+                  let error = new Polynomial(params.poly_degree, sample_gauss(params.poly_degree, 3.2))
                   let k0 = this.secret_key.s.multiply(k1, params.cipher_modulus).add(error, params.cipher_modulus).scalar_multiply(-1).add(sk_squared.scalar_multiply(power), params.cipher_modulus).mod(params.cipher_modulus);
                   keys[i] = [k0, k1]
                   power = power * base;
@@ -609,7 +620,7 @@ class BFVParameters {
             this.poly_degree = poly_degree;
             this.plain_modulus = plain_modulus;
             this.cipher_modulus = cipher_modulus;
-            this.scaling_factor = this.cipher_modulus / this.plain_modulus;
+            this.scaling_factor = Math.floor(this.cipher_modulus / this.plain_modulus);
       }
 
       print_parameters() {
