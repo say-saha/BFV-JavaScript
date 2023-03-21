@@ -21,8 +21,8 @@ class BFVKeyGenerator {
       generate_public_key(params) {
             let uniform_sample = RandomSample.sample_uniform(0, params.cipher_modulus, params.poly_degree);
             let pk_coeff = new Polynomial(params.poly_degree, uniform_sample);
-            let triangle_sample = RandomSample.sample_triangle(params.poly_degree);
-            let pk_error = new Polynomial(params.poly_degree, triangle_sample);
+            let gauss_sample = RandomSample.sample_gauss(params.poly_degree, 3.2);
+            let pk_error = new Polynomial(params.poly_degree, gauss_sample);
 
             let p0 = pk_coeff.multiply(this.secret_key.s, params.cipher_modulus);
             p0 = pk_error.add(p0, params.cipher_modulus);
@@ -42,7 +42,7 @@ class BFVKeyGenerator {
 
             for(let i=0; i<num_levels; i++) {
                   let k1 = new Polynomial(params.poly_degree, RandomSample.sample_uniform(0, params.cipher_modulus, params.poly_degree));
-                  let error = new Polynomial(params.poly_degree, RandomSample.sample_triangle(params.poly_degree))
+                  let error = new Polynomial(params.poly_degree, RandomSample.sample_gauss(params.poly_degree, 3.2))
                   let k0 = this.secret_key.s.multiply(k1, params.cipher_modulus).add(error, params.cipher_modulus).scalar_multiply(-1).add(sk_squared.scalar_multiply(power), params.cipher_modulus).mod(params.cipher_modulus);
                   keys[i] = [k0, k1]
                   power = power * base;

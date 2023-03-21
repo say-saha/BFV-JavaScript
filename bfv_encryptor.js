@@ -18,9 +18,9 @@ class BFVEncryptor {
             
             let random_vec = new Polynomial(this.poly_degree, RandomSample.sample_triangle(this.poly_degree));
 
-            let error1 = new Polynomial(this.poly_degree, RandomSample.sample_triangle(this.poly_degree));
+            let error1 = new Polynomial(this.poly_degree, RandomSample.sample_gauss(this.poly_degree, 3.2));
             // error1 = new Polynomial(this.poly_degree, new Array(this.poly_degree).fill(0)); //TODO: Not sure why error1 is re-declared with empty array
-            let error2 = new Polynomial(this.poly_degree, RandomSample.sample_triangle(this.poly_degree));
+            let error2 = new Polynomial(this.poly_degree, RandomSample.sample_gauss(this.poly_degree, 3.2));
             // error2 = new Polynomial(this.poly_degree, new Array(this.poly_degree).fill(0)); //TODO: Not sure why error2 is re-declared with empty array
 
             let c0 = error1.add(p0.multiply(random_vec, this.coeff_modulus), this.coeff_modulus).add(scaled_message, this.coeff_modulus);

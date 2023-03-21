@@ -1,5 +1,5 @@
 var plain_modulus = 8;
-var cipher_modulus = 17592186044416;
+var cipher_modulus = 1099511627776;
 var degrees = [16, 32, 64, 128, 256, 512, 1024];
 // var degrees = [16, 32, 64, 128];
 var test_cases = 10;

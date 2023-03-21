@@ -3,7 +3,7 @@ class BFVParameters {
             this.poly_degree = poly_degree;
             this.plain_modulus = plain_modulus;
             this.cipher_modulus = cipher_modulus;
-            this.scaling_factor = this.cipher_modulus / this.plain_modulus;
+            this.scaling_factor = Math.floor(this.cipher_modulus / this.plain_modulus);
       }
 
       print_parameters() {

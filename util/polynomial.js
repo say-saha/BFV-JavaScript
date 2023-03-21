@@ -10,7 +10,12 @@ class Polynomial {
       add(poly, coeff_modulus) {
             let sum = new Polynomial(this.poly_degree, new Array(this.poly_degree).fill(0));
             for(let i=0; i<this.poly_degree; i++){
-                  sum.coeffs[i] = this.coeffs[i] + poly.coeffs[i];
+                  if(BigNumber.isBigNumber(this.coeffs[i]))
+                        sum.coeffs[i] = this.coeffs[i].plus(poly.coeffs[i]);
+                  else if (BigNumber.isBigNumber(poly.coeffs[i]))
+                        sum.coeffs[i] = poly.coeffs[i].plus(this.coeffs[i]);      
+                  else
+                        sum.coeffs[i] = this.coeffs[i] + poly.coeffs[i];
             }
             if(arguments.length > 1){
                   sum = sum.mod(coeff_modulus)
@@ -31,11 +36,20 @@ class Polynomial {
                   let coeff = 0;
                   for(let i=0; i<this.poly_degree; i++){
                         if((d-i)>=0 && (d-i)<this.poly_degree)
-                              coeff = coeff + this.coeffs[i] * poly.coeffs[d-i];
+                              if (((new BigNumber(coeff)).plus((new BigNumber(this.coeffs[i])).multipliedBy(poly.coeffs[d-i]))).isGreaterThanOrEqualTo(Number.MAX_SAFE_INTEGER))
+                                    coeff = (new BigNumber(coeff)).plus((new BigNumber(this.coeffs[i])).multipliedBy(poly.coeffs[d-i]));
+                              else
+                                    coeff = coeff + this.coeffs[i] * poly.coeffs[d-i];
                   }
-                  mul.coeffs[index] = mul.coeffs[index] + (sign * coeff);
+                  if (BigNumber.isBigNumber(coeff))
+                        mul.coeffs[index] = (new BigNumber(mul.coeffs[index])).plus(coeff.multipliedBy(sign));
+                  else
+                        mul.coeffs[index] = mul.coeffs[index] + (sign * coeff);
                   if(arguments.length > 1) {
-                        mul.coeffs[index] = ((mul.coeffs[index] % coeff_modulus) + coeff_modulus) % coeff_modulus;
+                        if (BigNumber.isBigNumber(mul.coeffs[index]))
+                              mul.coeffs[index] = ((mul.coeffs[index]).mod(coeff_modulus)).toNumber();
+                        else
+                              mul.coeffs[index] = ((mul.coeffs[index] % coeff_modulus) + coeff_modulus) % coeff_modulus;
                   }
             }
             return mul;                  
@@ -45,11 +59,18 @@ class Polynomial {
             let new_coeffs = new Array(this.poly_degree).fill(0);
             if(arguments.length == 1)
                   for(let i=0; i<this.poly_degree; i++){
-                        new_coeffs[i] = this.coeffs[i] * scalar;
+                        if (BigNumber.isBigNumber(this.coeffs[i])){
+                              new_coeffs[i] = (this.coeffs[i]).multipliedBy(scalar);                        
+                        }
+                        else
+                              new_coeffs[i] = this.coeffs[i] * scalar;
                   }
             else
                   for(let i=0; i<this.poly_degree; i++){
-                        new_coeffs[i] = (((this.coeffs[i] * scalar) % coeff_modulus) + coeff_modulus) % coeff_modulus;
+                        if (((new BigNumber(this.coeffs[i])).multipliedBy(scalar)).isGreaterThanOrEqualTo(Number.MAX_SAFE_INTEGER))
+                              new_coeffs[i] = (((new BigNumber(this.coeffs[i])).multipliedBy(scalar))).mod(coeff_modulus);
+                        else
+                              new_coeffs[i] = (((this.coeffs[i] * scalar) % coeff_modulus) + coeff_modulus) % coeff_modulus;
                   }
             return new Polynomial(this.poly_degree, new_coeffs);
       }
@@ -65,9 +86,15 @@ class Polynomial {
             let new_coeffs = new Array(this.poly_degree).fill(0);
             for(let i=0;i<this.poly_degree;i++){
                   if (this.coeffs[i] instanceof Complex)
-                        new_coeffs[i] = Math.round(this.coeffs[i].real);
+                        if ((new BigNumber(this.coeffs[i].real)).e > 0)
+                              new_coeffs[i] = new BigNumber(BigInt(this.coeffs[i].real));
+                        else
+                              new_coeffs[i] = Math.round(this.coeffs[i].real);
                   else
-                        new_coeffs[i] = Math.round(this.coeffs[i]);
+                        if (BigNumber.isBigNumber(this.coeffs[i]))
+                              new_coeffs[i] = this.coeffs[i].integerValue();
+                        else
+                              new_coeffs[i] = Math.round(this.coeffs[i]);
             }
             return new Polynomial(this.poly_degree, new_coeffs)
       }

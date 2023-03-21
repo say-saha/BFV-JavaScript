@@ -1,3 +1,14 @@
+var sample_gauss = (sample_count, std_dev) => {
+      // Samples from a gaussian or normal distribution.
+      // Using Box-Muller transform
+      let gauss_sample = new Array(sample_count).fill(0);
+      for(let i=0; i<sample_count; i++){
+            let box_muller = Math.sqrt(-2.0 * Math.log(Math.random())) * Math.cos(2.0 * Math.PI * Math.random());
+            gauss_sample[i] =  Math.round(box_muller * std_dev);
+      }
+      return gauss_sample;
+}
+
 var sample_triangle = (sample_count) => {
       // Samples from a discrete triangle distribution.
 
@@ -49,4 +60,4 @@ var sample_uniform = (min_val, max_val, sample_count) => {
 }
 
 
-module.exports = {sample_triangle, sample_uniform}
+module.exports = {sample_triangle, sample_uniform, sample_gauss}
