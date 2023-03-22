@@ -99,7 +99,7 @@ class Polynomial {
             return new Polynomial(this.poly_degree, new_coeffs)
       }
 
-      multiply_fft(poly, round=true) {
+      multiply_fft(poly) {
             let fft = new FFTContext(this.poly_degree * 8);
             let a = fft.fft_fwd(this.coeffs.concat(new Array(this.poly_degree).fill(0)));
             let b = fft.fft_fwd(poly.coeffs.concat(new Array(this.poly_degree).fill(0)));
@@ -122,10 +122,7 @@ class Polynomial {
                   poly_prod[index] = ComplexCalc.complex_add(poly_prod[index], ComplexCalc.complex_mul(sign, prod[d]));
             }
 
-            if (round == true)
-                  return new Polynomial(this.poly_degree, poly_prod).round();
-            else
-                  return new Polynomial(this.poly_degree, poly_prod);
+            return new Polynomial(this.poly_degree, poly_prod).round();
       }
 
       base_decompose(base, num_levels) {

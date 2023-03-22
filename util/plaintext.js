@@ -1,9 +1,6 @@
 class Plaintext {
-      constructor(poly, scaling_factor) {
+      constructor(poly) {
             this.poly = poly;
-            if(arguments.length > 1) {
-                  this.scaling_factor = scaling_factor;
-            }
       }
 }
 

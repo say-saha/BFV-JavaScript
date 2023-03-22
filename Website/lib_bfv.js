@@ -145,13 +145,9 @@ var bit_reverse_vec = (values) => {
       return result;
 }
 class Ciphertext {
-      constructor(c0, c1, scaling_factor, modulus) {
+      constructor(c0, c1) {
             this.c0 = c0;
             this.c1 = c1;
-            if(arguments.length > 2) {
-                  this.scaling_factor = scaling_factor;
-                  this.modulus = modulus;
-            }
       }
 }
 class Complex {
@@ -238,11 +234,8 @@ class FFTContext {
       }
 }
 class Plaintext {
-      constructor(poly, scaling_factor) {
+      constructor(poly) {
             this.poly = poly;
-            if(arguments.length > 1) {
-                  this.scaling_factor = scaling_factor;
-            }
       }
 }
 class Polynomial {
@@ -345,7 +338,7 @@ class Polynomial {
             return new Polynomial(this.poly_degree, new_coeffs)
       }
 
-      multiply_fft(poly, round=true) {
+      multiply_fft(poly) {
             let fft = new FFTContext(this.poly_degree * 8);
             let a = fft.fft_fwd(this.coeffs.concat(new Array(this.poly_degree).fill(0)));
             // console.log("A: ", a);
@@ -370,10 +363,7 @@ class Polynomial {
                   poly_prod[index] = complex_add(poly_prod[index], complex_mul(sign, prod[d]));
             }
 
-            if (round == true)
-                  return new Polynomial(this.poly_degree, poly_prod).round();
-            else
-                  return new Polynomial(this.poly_degree, poly_prod);
+            return new Polynomial(this.poly_degree, poly_prod).round();
       }
 
       base_decompose(base, num_levels) {
@@ -424,17 +414,13 @@ class BFVDecryptor {
             this.secret_key = secret_key;
       }
 
-      decrypt(ciphertext_poly, c2) {
+      decrypt(ciphertext_poly) {
             let c0 = ciphertext_poly.c0;
             let c1 = ciphertext_poly.c1;
             // let intermed_message = c0.add(c1.multiply(this.secret_key.s, this.cipher_modulus), this.cipher_modulus); //Issue here
             let intermed_message = c1.multiply(this.secret_key.s, this.cipher_modulus);
             intermed_message = c0.add(intermed_message, this.cipher_modulus);
 
-            if (arguments.length > 1) {
-                let secret_key_squared = this.secret_key.s.multiply(this.secret_key.s, this.cipher_modulus);
-                intermed_message = intermed_message.add(c2.multiply(secret_key_squared, this.cipher_modulus), this.cipher_modulus);
-            }
             intermed_message = intermed_message.scalar_multiply(1 / this.scaling_factor);
             intermed_message = intermed_message.round();
             intermed_message = intermed_message.mod(this.plain_modulus);
