@@ -193,11 +193,11 @@ class FFTContext {
       fft(coeffs, rou) {
             let num_coeffs = coeffs.length;
             let result = bit_reverse_vec(coeffs);
-            let log_num_coeffs = parseInt(Math.log2(num_coeffs));
+            // let log_num_coeffs = parseInt(Math.log2(num_coeffs));
 
             let butterfly_plus, butterfly_minus;
 
-            for(let logm=1; logm<= log_num_coeffs; logm++){
+            for(let logm=1; logm<= parseInt(Math.log2(num_coeffs)); logm++){
                   for(let j=0; j<num_coeffs; j = j + (1 << logm)) {
                         for(let i=0; i<(1 << (logm - 1)); i++) {
                               let index_even = j + i;
@@ -219,8 +219,7 @@ class FFTContext {
       }
 
       fft_fwd(coeffs) {
-            let fwd = this.fft(coeffs, this.roots_of_unity);
-            return fwd;
+            return this.fft(coeffs, this.roots_of_unity);
       }
 
       fft_inv(coeffs) {
@@ -462,10 +461,7 @@ class BFVEvaluator {
       }
 
       add(cipher1, cipher2) {
-            let new_c0 = cipher1.c0.add(cipher2.c0, this.coeff_modulus);
-            let new_c1 = cipher1.c1.add(cipher2.c1, this.coeff_modulus);
-
-            return new Ciphertext(new_c0, new_c1);
+            return new Ciphertext(cipher1.c0.add(cipher2.c0, this.coeff_modulus), cipher1.c1.add(cipher2.c1, this.coeff_modulus));
       }
 
       multiply(cipher1, cipher2, relin_key) {
@@ -499,15 +495,13 @@ class BFVEvaluator {
             // A Ciphertext which has only two components.
 
             let keys = relin_key.keys;
-            let base = relin_key.base;
-            let num_levels = keys.length;
 
-            let c2_decomposed = c2.base_decompose(base, num_levels);
+            let c2_decomposed = c2.base_decompose(relin_key.base, keys.length);
 
             let new_c0 = c0;
             let new_c1 = c1;
 
-            for(let i=0; i<num_levels; i++) {
+            for(let i=0; i<keys.length; i++) {
                   new_c0 = new_c0.add(keys[i][0].multiply(c2_decomposed[i], this.coeff_modulus), this.coeff_modulus);
                   new_c1 = new_c1.add(keys[i][1].multiply(c2_decomposed[i], this.coeff_modulus), this.coeff_modulus);
             }
@@ -550,9 +544,7 @@ class BFVKeyGenerator {
 
       generate_secret_key(params) {
             let poly_coeff = sample_triangle(params.poly_degree);
-            let poly = new Polynomial(params.poly_degree, poly_coeff);
-            let secret_key = new SecretKey(poly);
-            return secret_key;
+            return new SecretKey(new Polynomial(params.poly_degree, poly_coeff));
       }
 
       generate_public_key(params) {
@@ -565,8 +557,7 @@ class BFVKeyGenerator {
             p0 = pk_error.add(p0, params.cipher_modulus);
             p0 = p0.scalar_multiply(-1, params.cipher_modulus);
             let p1 = pk_coeff;
-            let public_key = new PublicKey(p0, p1);
-            return public_key;
+            return new PublicKey(p0, p1);
       }
 
       generate_relin_key(params) {
@@ -586,8 +577,7 @@ class BFVKeyGenerator {
                   power = ((power % params.cipher_modulus) + params.cipher_modulus) % params.cipher_modulus;
             }
 
-            let relin_key = new RelinKey(base, keys);
-            return relin_key;
+            return new RelinKey(base, keys);
       }
 
       print_keys() {
