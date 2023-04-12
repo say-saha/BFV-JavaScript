@@ -1,6 +1,8 @@
 const FFTContext = require('./fft.js');
 const ComplexCalc = require('./complex_calc.js');
 const Complex = require('./complex.js');
+const BigNumber = require('bignumber.js'); 
+
 class Polynomial {
       constructor(poly_degree, coeffs) {
             this.poly_degree = poly_degree;

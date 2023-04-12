@@ -161,8 +161,6 @@ class FFTContext {
             this.fft_length = fft_length;
             this.roots_of_unity = this.precompute_fft()[0];
             this.roots_of_unity_inv = this.precompute_fft()[1];
-            this.reversed_bits = this.precompute_fft()[2];
-            this.rot_group = this.precompute_fft()[3];
       }
 
       precompute_fft() {
@@ -175,19 +173,7 @@ class FFTContext {
                   roots_of_unity_inv[i] = new Complex(Math.cos(-angle), Math.sin(-angle));
             }
 
-            let num_slots = Math.floor(this.fft_length / 4);
-            let reversed_bits = new Array(num_slots).fill(0);
-            let width = parseInt(Math.log2(num_slots));
-            for(let i=0; i<num_slots; i++) {
-                  reversed_bits[i] = ((reverse_bits(i, width) % num_slots) + num_slots) % num_slots;
-            }
-
-            let rot_group = new Array(num_slots).fill(1);
-            for (let i=1; i<num_slots; i++) {
-                  rot_group[i] = (((5 * rot_group[i-1]) % this.fft_length) + this.fft_length) % this.fft_length;
-            }
-
-            return [roots_of_unity, roots_of_unity_inv, reversed_bits, rot_group];
+            return [roots_of_unity, roots_of_unity_inv];
       }
 
       fft(coeffs, rou) {
@@ -325,7 +311,7 @@ class Polynomial {
             for(let i=0;i<this.poly_degree;i++){
                   if (this.coeffs[i] instanceof Complex)
                         if ((new BigNumber(this.coeffs[i].real)).e > 0)
-                              new_coeffs[i] = new BigNumber(BigInt(this.coeffs[i].real));
+                              new_coeffs[i] = new BigNumber(this.coeffs[i].real);
                         else
                               new_coeffs[i] = Math.round(this.coeffs[i].real);
                   else

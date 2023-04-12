@@ -5,8 +5,8 @@ const BFVEncryptor = require('./bfv_encryptor.js');
 const BFVDecryptor = require('./bfv_decryptor.js');
 const BFVEvaluator = require('./bfv_evaluator.js');
 
-let degree = 256;
-let plain_modulus = 17;
+let degree = 16;
+let plain_modulus = 3;
 // let plain_modulus = 64951;
 // let cipher_modulus = 8000000000000000000000;
 let cipher_modulus = 8000000000000;
@@ -25,17 +25,17 @@ const encryptor = new BFVEncryptor(params, public_key);
 const decryptor = new BFVDecryptor(params, secret_key);
 const evaluator = new BFVEvaluator(params);
 let count = 0;
-for (let i=0;i<10;i++){
+for (let i=0;i<1;i++){
       // const evaluator = BFVEvaluator(params)
 
       // let message1 = 2;
       // let message2 = 2;
       // let message3 = 2;
-      let message1 = Math.floor(Math.random() * 1000);
+      let message1 = Math.floor(Math.random() * 10);
       console.log("Number 1: ", message1);
-      let message2 = Math.floor(Math.random() * 1000);
+      let message2 = Math.floor(Math.random() * 10);
       console.log("Number 2: ", message2);
-      let message3 = Math.floor(Math.random() * 1000);
+      let message3 = Math.floor(Math.random() * 10);
       console.log("Number 3: ", message3);
 
       let encoded_plain1 = encoder.encode(message1);
@@ -45,15 +45,16 @@ for (let i=0;i<10;i++){
       let cipher2 = encryptor.encrypt(encoded_plain2);
       let cipher3 = encryptor.encrypt(encoded_plain3);
       // console.log("Encrypted number: ", cipher1);
-      let mul = evaluator.multiply(cipher1, cipher2, relin_key);
-      let final = evaluator.add(mul, cipher3);
+      let add = evaluator.add(cipher1, cipher2);
+      let final = evaluator.add(add, cipher3);
+      final = evaluator.add(add, cipher3);
       // for(let i=0;i<1;i++)
       //       add = evaluator.add(add,cipher1);
       let decrypted_encoded = decryptor.decrypt(final);
       // console.log("Decrypted encoded: ", decrypted_encoded);
       let decrypted = encoder.decode(decrypted_encoded);
       console.log("Decrypted: ", decrypted);
-      if((message1 * message2) + message3 == decrypted)
+      if(message1 + message2 + message3 == decrypted)
             count ++;
 }
 
