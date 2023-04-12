@@ -1,7 +1,7 @@
 var plain_modulus = 8;
-var cipher_modulus = 1099511627776;
-var degrees = [16, 32, 64, 128, 256, 512, 1024];
-// var degrees = [16, 32, 64, 128];
+var cipher_modulus = 17179869184; // This is 2^34
+// var degrees = [16, 32, 64, 128, 256, 512, 1024];
+var degrees = [16, 32, 64, 128];
 var test_cases = 10;
 
 function use_case_1(){
